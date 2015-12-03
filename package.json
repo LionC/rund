@@ -1,14 +1,14 @@
 {
-  "name": "rund",
+  "name": "roond",
   "version": "0.1.0",
   "description": "A transpiler to write best practive Angular 1.x code for you",
-  "main": "rund.js",
+  "main": "roond.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LionC/rund.git"
+    "url": "git+https://github.com/LionC/roond.git"
   },
   "keywords": [
     "angular"
@@ -16,11 +16,11 @@
   "author": "LionC<me@lionc.de>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/LionC/rund/issues"
+    "url": "https://github.com/LionC/roond/issues"
   },
-  "homepage": "https://github.com/LionC/rund#readme",
+  "homepage": "https://github.com/LionC/roond#readme",
   "bin": {
-    "rund": "rund.js"
+    "roond": "roond.js"
   },
   "preferGlobal": true
 }
