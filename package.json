@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/LionC/roond#readme",
   "bin": {
-    "roond": "roond.js"
+    "roond": "roondExec.js"
   },
   "preferGlobal": true
 }

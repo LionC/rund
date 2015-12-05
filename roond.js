@@ -1,155 +1,61 @@
 #! /usr/bin/env node
 
-var fs = require('fs');
-var stream = require('stream');
+module.exports = roond;
 
-var templates = {
-  root: {
-    template: [
-      "(function() {",
-      "",
-      "    angular.module('$MODULE')",
-      "    $COMPONENT",
-      "    $CONFIG",
-      "    $RUN",
-      "",
-      "})();"
-    ].join('\n'),
-    build: function(parts) {
-      var ret = "(function() {\n\n    angular.module('" + parts.module + "')\n";
-      ret += parts.component + "\n";
+var fnUtil = require('./functionUtil.js')
 
-      return ret;
-    }
-  }
-}
-
-var transpilers = {
-  service: function serviceTranspiler(componentFunc) {
-    var injects = getFunctionParameters(componentFunc);
-
-    var ret = [
-      "(function(){",
-      "",
-      "angular.module('" + _module + "')",
-      ".service([",
-      injects.map(function(inject) { return "    '" + inject + "'," }).join("\n"),
-      "    " + componentName,
-      "])",
-      "",
-      "function " + componentName + "(" + injects.join(", ") + ") {" + getFunctionBody(componentFunc) + "}",
-      "",
-      "})();"
-    ].join('\n');
-
-    return ret;
-  },
-  factory: function factoryTranspiler(componentFunc) {
-    var injects = getFunctionParameters(componentFunc);
-
-    var ret = [
-      "(function(){",
-      "",
-      "angular.module('" + _module + "')",
-      ".factory([",
-      injects.map(function(inject) { return "    '" + inject + "'," }).join("\n"),
-      "    " + componentName,
-      "])",
-      "",
-      "function " + componentName + "(" + injects.join(", ") + ") {" + getFunctionBody(componentFunc) + "}",
-      "",
-      "})();"
-    ].join('\n');
-
-    return ret;
-  },
-  controller: function controllerTranspiler(componentFunc) {
-    var injects = getFunctionParameters(componentFunc);
-
-    var ret = [
-      "(function(){",
-      "",
-      "angular.module('" + _module + "')",
-      ".controller([",
-      injects.map(function(inject) { return "    '" + inject + "'," }).join("\n"),
-      "    " + componentName,
-      "])",
-      "",
-      "function " + componentName + "(" + injects.join(", ") + ") {" + getFunctionBody(componentFunc) + "}",
-      "",
-      "})();"
-    ].join('\n');
-
-    return ret;
-  }
-}
-
-var fileName = process.argv[2];
-var componentName = fileName.substr(0, fileName.lastIndexOf('.'));
-
-var content = fs.readFileSync(fileName, {encoding: 'utf-8'});
-
-eval(content);
-
-if(_module == undefined) {
-  console.error('Missing module declaration in ' + fileName + '- A rund file must define a _module variable containing the module name');
-}
-
-var componentFunction = null;
-var transpiler = null;
+var serviceTranspiler = require('./transpilers/ServiceTranspiler.js');
+var factoryTranspiler = require('./transpilers/FactoryTranspiler.js');
+var controllerTranspiler = require('./transpilers/ControllerTranspiler.js');
 
 var possibleComponents = [
   {
     postfix: 'Service',
-    transpiler: transpilers.service
+    transpiler: serviceTranspiler
   },
   {
     postfix: 'Controller',
-    transpiler: transpilers.controller
+    transpiler: controllerTranspiler
   },
   {
     postfix: 'Factory',
-    transpiler: transpilers.factory
+    transpiler: factoryTranspiler
   }
 ];
 
-for(var i = 0; i < possibleComponents.length; i++) {
-  var functionName = componentName + possibleComponents[i].postfix;
+function roond(content, fileBaseName) {
+  var componentName = fileBaseName.substr(0, fileBaseName.lastIndexOf('.'));
+  console.log('Component name detected: ' + componentName);
 
-  if(functionExists(functionName)) {
-    componentFunction = eval(functionName);
-    transpiler = possibleComponents[i].transpiler;
+  eval(content);
 
-    break;
+  if(_module == undefined) {
+    console.error('Missing module declaration in ' + fileBaseName + '- A rund file must define a _module variable containing the module name');
   }
-}
 
-if(componentFunction == null) {
-  console.error('Could not find a component function in ' + fileName);
-  //exit
-}
+  var componentFunction = null;
+  var transpiler = null;
 
-console.log(transpiler(componentFunction));
+  for(var i = 0; i < possibleComponents.length; i++) {
+    var functionName = componentName + possibleComponents[i].postfix;
+    console.log('checking for ' + functionName);
 
-function getFunctionBody(func) {
-  var funcString = func.toString();
+    if(functionExists(functionName)) {
+      componentFunction = eval(functionName);
+      transpiler = possibleComponents[i].transpiler;
 
-  return funcString.slice(funcString.indexOf('{') + 1, funcString.lastIndexOf('}'));
-}
+      break;
+    }
+  }
 
-function getFunctionParameters(func) {
-  var commentPattern = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-  var argumentNamePattern = /([^\s,]+)/g;
+  if(componentFunction == null) {
+    console.error('Could not find a component function in ' + fileBaseName);
+    //exit
+  }
 
-  var functionWithoutComments = func.toString().replace(commentPattern, '');
-  var result = functionWithoutComments.slice(functionWithoutComments.indexOf('(')+1, functionWithoutComments.indexOf(')')).match(argumentNamePattern);
+  return transpiler(componentFunction, componentName);
 
-  if(result === null)
-     result = [];
-
-  return result;
-}
-
-function functionExists(name) {
-  return eval("typeof " + name + " === 'function'");
+  function functionExists(name) {
+    return eval("typeof " + name + " === 'function'");
+  }
 }
