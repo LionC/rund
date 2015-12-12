@@ -23,9 +23,18 @@ var possibleComponents = [
   }
 ];
 
-function roond(content, fileBaseName) {
+
+function roond(content, fileBaseName, options) {
+  options = options || {};
+
+  function roondDebug(msg) {
+    if(options.debug)
+      console.log('roond: ' + msg);
+  }
+
   var componentName = fileBaseName.substr(0, fileBaseName.lastIndexOf('.'));
-  console.log('Component name detected: ' + componentName);
+
+  roondDebug('Basename: ' + fileBaseName + 'Component name detected: ' + componentName);
 
   eval(content);
 
@@ -38,7 +47,7 @@ function roond(content, fileBaseName) {
 
   for(var i = 0; i < possibleComponents.length; i++) {
     var functionName = componentName + possibleComponents[i].postfix;
-    console.log('checking for ' + functionName);
+    roondDebug('checking for ' + functionName);
 
     if(functionExists(functionName)) {
       componentFunction = eval(functionName);
@@ -53,7 +62,10 @@ function roond(content, fileBaseName) {
     //exit
   }
 
-  return transpiler(componentFunction, componentName);
+  if(options.iife !== false)
+    return "(function() {\n\n" + transpiler(componentFunction, componentName) + "\n\n})();";
+  else
+    return transpiler(componentFunction, componentName);
 
   function functionExists(name) {
     return eval("typeof " + name + " === 'function'");

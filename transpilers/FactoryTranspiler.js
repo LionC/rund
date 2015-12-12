@@ -6,8 +6,6 @@ function factoryTranspiler(componentFunc, componentName) {
   var injects = fnUtil.getFunctionParameters(componentFunc);
 
   var ret = [
-    "(function(){",
-    "",
     "angular.module('" + _module + "')",
     ".factory([",
     injects.map(function(inject) { return "    '" + inject + "'," }).join("\n"),
@@ -15,8 +13,6 @@ function factoryTranspiler(componentFunc, componentName) {
     "])",
     "",
     "function " + componentName + "(" + injects.join(", ") + ") {" + fnUtil.getFunctionBody(componentFunc) + "}",
-    "",
-    "})();"
   ].join('\n');
 
   return ret;

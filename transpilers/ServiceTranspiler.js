@@ -2,12 +2,10 @@ var fnUtil = require('../functionUtil.js');
 
 module.exports = serviceTranspiler;
 
-function serviceTranspiler(componentFunc, compnentName) {
+function serviceTranspiler(componentFunc, componentName) {
   var injects = fnUtil.getFunctionParameters(componentFunc);
 
   var ret = [
-    "(function(){",
-    "",
     "angular.module('" + _module + "')",
     ".service([",
     injects.map(function(inject) { return "    '" + inject + "'," }).join("\n"),
@@ -15,8 +13,6 @@ function serviceTranspiler(componentFunc, compnentName) {
     "])",
     "",
     "function " + componentName + "(" + injects.join(", ") + ") {" + fnUtil.getFunctionBody(componentFunc) + "}",
-    "",
-    "})();"
   ].join('\n');
 
   return ret;
