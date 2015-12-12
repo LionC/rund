@@ -38,3 +38,22 @@ Lets look at an example:
     }
     
     })();
+    
+You can see that there is no black magic happening. Roond simply wrote the Angular/Javascript best-practice boilerplate 
+for you. Note that the Roond code is still legal javascript, so you do not need an editor plugin to use it.
+
+##How to use
+
+First, you need the npm package:
+
+        npm install roond
+        
+If you want to use the Roond command line tool, add a `-g` to that command to install globally.
+
+If you want to use Roond in your gulp build process, [use the official gulp plugin](https://github.com/LionC/gulp-roond).
+
+Otherwise, use the Roond command line tool to convert files:
+
+        roond inputFile.js outputFile.js
+        
+For a detailed documentation on the possible command line options type `man roond`
