@@ -19,9 +19,11 @@ Lets look at an example:
         return $resource(apiBase + tomatoEndpoint);
     }
   
-**What Roond will generate**:
+**What Roond will generate(with default options)**:
 
     (function() {
+  
+    'use strict';
   
     angular.module('burgerbuilder')
       .factory('Tomato', [
