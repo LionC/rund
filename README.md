@@ -46,7 +46,7 @@ for you. Note that the Roond code is still legal javascript, so you do not need 
 
 First, you need the npm package:
 
-        npm install roond
+    $ npm install roond
         
 If you want to use the Roond command line tool, add a `-g` to that command to install globally.
 
@@ -54,6 +54,6 @@ If you want to use Roond in your gulp build process, [use the official gulp plug
 
 Otherwise, use the Roond command line tool to convert files:
 
-        roond inputFile.js outputFile.js
+    $ roond inputFile.js outputFile.js
         
 For a detailed documentation on the possible command line options type `man roond`
