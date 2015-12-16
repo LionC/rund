@@ -50,9 +50,7 @@ First, you need the npm package:
         
 If you want to use the Roond command line tool, add a `-g` to that command to install globally.
 
-If you want to use Roond in your gulp build process, [use the official gulp plugin](https://github.com/LionC/gulp-roond).
-
-Otherwise, use the Roond command line tool to convert files:
+If you want to use Roond in your gulp build process, [use the official gulp plugin](https://github.com/LionC/gulp-roond). Otherwise, use the Roond command line tool to convert files:
 
     $ roond inputFile.js outputFile.js
         
